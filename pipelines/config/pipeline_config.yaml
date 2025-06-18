@@ -1,0 +1,4 @@
+paths:
+  bronze: "/data/bronze/ecommerce_events"
+  silver: "/data/silver/ecommerce_events"
+  gold: "/data/gold/ecommerce_events"
