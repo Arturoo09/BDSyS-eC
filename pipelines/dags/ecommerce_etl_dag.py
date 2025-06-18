@@ -36,9 +36,12 @@ with DAG(
     default_args=default_args,
     description="ETL de eventos de e-commerce con Spark",
     schedule=None,
-    start_date=pendulum.datetime(2024, 1, 1, tz="Europe/Madrid"),
+    start_date=pendulum.datetime(2020, 1, 1, tz="Europe/Madrid"),
     catchup=False,
     tags=["ecommerce", "spark"],
+    params={
+        "processing_date": "2020-01-01" 
+    },
 ) as dag:
 
     # 1) Sensor de fichero
@@ -58,6 +61,7 @@ with DAG(
         application=str(SPARK_JOBS_PATH / "bronze_to_silver.py"),
         name="bronze_to_silver",
         conf={
+            "spark.driver.memory": "2g",
             "spark.executor.memory": "2g"
         },
         application_args=[
@@ -73,12 +77,13 @@ with DAG(
         application=str(SPARK_JOBS_PATH / "silver_to_gold.py"),
         name="silver_to_gold",
         conf={
+            "spark.driver.memory": "2g",
             "spark.executor.memory": "2g"
         },
         application_args=[
             "--input-path", str(BASE_PATH / "data" / "silver"),
             "--output-path", str(BASE_PATH / "data" / "gold"),
-            "--processing-date", "{{ ds }}",
+            "--processing-date", "{{ params.processing_date }}",
         ],
     )
 
