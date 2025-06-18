@@ -11,6 +11,19 @@ def process_silver_to_gold(spark, input_path, output_path, processing_date):
     - Escribe el resultado agregado en la capa Gold, particionado por fecha.
     """
     print(f"Iniciando el procesamiento de Silver a Gold para la fecha: {processing_date}")
+
+    # Define las propiedades de la conexión JDBC
+    db_properties = {
+        "user": "arturo",
+        "password": "arturo",
+        "driver": "org.postgresql.Driver"
+    }
+
+    # Define la URL de la base de datos
+    db_url = "jdbc:postgresql://localhost:5432/ecommerce_gold"
+
+    # Nombre de la tabla que se creará o sobreescribirá en PostgreSQL
+    table_name = "daily_product_metrics"
     
     # Construir la ruta de entrada completa para los datos Silver del día
     # Asumimos que la capa Silver está particionada por fecha de evento
@@ -57,6 +70,15 @@ def process_silver_to_gold(spark, input_path, output_path, processing_date):
     # Esto hace que las consultas futuras sobre fechas específicas sean extremadamente rápidas.
     print(f"Guardando datos agregados en la capa Gold en: {output_path}")
     df_gold.write.mode("overwrite").partitionBy("processing_date").parquet(output_path)
+    
+    df_gold.write.jdbc(
+        url=db_url,
+        table=table_name,
+        mode="overwrite",
+        properties=db_properties
+    )
+
+    print(f"Datos cargados exitosamente en la tabla '{table_name}' de PostgreSQL.")
 
     print("Proceso de Silver a Gold completado con éxito.")
 

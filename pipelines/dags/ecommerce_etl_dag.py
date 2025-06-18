@@ -85,6 +85,7 @@ with DAG(
             "--output-path", str(BASE_PATH / "data" / "gold"),
             "--processing-date", "{{ params.processing_date }}",
         ],
+        driver_class_path="/home/arturo/BDSyS-eC/drivers/postgresql-42.7.7.jar"
     )
 
     # Dependencias
