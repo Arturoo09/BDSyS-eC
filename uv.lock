@@ -339,6 +339,7 @@ name = "bdsys-ec"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "apache-airflow" },
     { name = "apache-airflow-providers-apache-spark" },
     { name = "flask-appbuilder" },
     { name = "ipykernel" },
@@ -347,11 +348,13 @@ dependencies = [
     { name = "pandas" },
     { name = "pendulum" },
     { name = "pyarrow" },
+    { name = "pyspark" },
     { name = "seaborn" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "apache-airflow", specifier = ">=3.0.2" },
     { name = "apache-airflow-providers-apache-spark", specifier = ">=5.3.0" },
     { name = "flask-appbuilder", specifier = ">=4.7.0" },
     { name = "ipykernel", specifier = ">=6.29.5" },
@@ -360,6 +363,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.0" },
     { name = "pendulum", specifier = ">=3.1.0" },
     { name = "pyarrow", specifier = ">=20.0.0" },
+    { name = "pyspark", specifier = ">=4.0.0" },
     { name = "seaborn", specifier = ">=0.13.2" },
 ]
 

@@ -11,9 +11,9 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 # CONSTANTES Y PARÁMETROS
 # =============================================================================
 SPARK_CONN_ID = "spark_default"
-BASE_PATH = Path("/opt/airflow/projects/ecommerce_pipeline")
-SPARK_JOBS_PATH = BASE_PATH / "spark_jobs"
-LANDING_ZONE = BASE_PATH / "landing_zone"
+BASE_PATH = Path("/home/arturo/BDSyS-eC") 
+SPARK_JOBS_PATH = BASE_PATH / "pipelines" / "spark_jobs"
+DATA_ZONE = BASE_PATH / "data" 
 FILE_TO_PROCESS = "2020-Apr.csv"
 
 # =============================================================================
@@ -44,8 +44,8 @@ with DAG(
     # 1) Sensor de fichero
     wait_for_input = FileSensor(
         task_id="wait_for_input",
-        fs_conn_id="fs_default",        # asegúrate de tener este Connection si usas FileSensor
-        filepath=str(LANDING_ZONE / FILE_TO_PROCESS),
+        fs_conn_id="fs_default",
+        filepath=str(DATA_ZONE / FILE_TO_PROCESS),
         poke_interval=30,
         timeout=30 * 60,
         mode="poke",
@@ -57,9 +57,12 @@ with DAG(
         conn_id=SPARK_CONN_ID,
         application=str(SPARK_JOBS_PATH / "bronze_to_silver.py"),
         name="bronze_to_silver",
+        conf={
+            "spark.executor.memory": "2g"
+        },
         application_args=[
-            "--input-file", str(LANDING_ZONE / FILE_TO_PROCESS),
-            "--output-path", str(BASE_PATH / "data" / "bronze"),
+            "--input-file", str(DATA_ZONE / FILE_TO_PROCESS),
+            "--output-path", str(BASE_PATH / "data" / "silver"),
         ],
     )
 
@@ -69,8 +72,11 @@ with DAG(
         conn_id=SPARK_CONN_ID,
         application=str(SPARK_JOBS_PATH / "silver_to_gold.py"),
         name="silver_to_gold",
+        conf={
+            "spark.executor.memory": "2g"
+        },
         application_args=[
-            "--input-path", str(BASE_PATH / "data" / "bronze"),
+            "--input-path", str(BASE_PATH / "data" / "silver"),
             "--output-path", str(BASE_PATH / "data" / "gold"),
             "--processing-date", "{{ ds }}",
         ],
