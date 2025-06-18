@@ -91,11 +91,11 @@ kaggle datasets download -d mkechinov/ecommerce-events-history-in-cosmetics-shop
 
 4. Configurar Airflow:
    
-Asegúrate de que tu instancia de Airflow esté en funcionamiento.
-Copia el DAG *pipelines/dags/ecommerce_etl_dag.py* a tu carpeta de DAGs de Airflow.
-En la UI de Airflow, configura las conexiones necesarias:
-**fs_default:** Una conexión de tipo "File Path" que apunte al directorio raíz del proyecto (/home/arturo/BDSyS-eC).
-**spark_default:** Una conexión de tipo "Spark" que apunte a tu clúster de Spark.
+- Asegúrate de que tu instancia de Airflow esté en funcionamiento.
+- Copia el DAG *pipelines/dags/ecommerce_etl_dag.py* a tu carpeta de DAGs de Airflow.
+- En la UI de Airflow, configura las conexiones necesarias:
+    - **fs_default:** Una conexión de tipo "File Path" que apunte al directorio raíz del proyecto (/home/arturo/BDSyS-eC).
+    - **spark_default:** Una conexión de tipo "Spark" que apunte a tu clúster de Spark.
 
 
 ## 🚀 Cómo Ejecutar el Pipeline
