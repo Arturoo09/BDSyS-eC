@@ -1,6 +1,7 @@
 # =============================================================================
 # VARIABLES DE CONFIGURACIÓN
 # =============================================================================
+
 VENV_DIR := .venv
 PYTHON := $(VENV_DIR)/bin/python
 UV := $(VENV_DIR)/bin/uv
@@ -8,9 +9,43 @@ KAGGLE := $(VENV_DIR)/bin/kaggle
 DATA_DIR := data
 KAGGLE_DATASET_ID := mkechinov/ecommerce-behavior-data-from-multi-category-store
 
-# Configuración para que 'make' funcione mejor
+CUR_DIR := $(shell pwd)
+ENV_FILE := $(CUR_DIR)/.env 
+DOCKER_DIR := docker
+DOCKER_FILES := $(wildcard $(DOCKER_DIR)/*.yml)
+DOCKER_CMD := docker compose \
+				--project-directory $(CUR_DIR) \
+                --env-file $(ENV_FILE) \
+                $(foreach f,$(DOCKER_FILES),-f $(f))
+
 .DEFAULT_GOAL := help
-.PHONY: help setup venv data clean
+.PHONY: help setup venv data clean up down restart build
+
+# =============================================================================
+# DOCKER COMMANDS
+# =============================================================================
+
+up: ## 🐳 Levanta todos los servicios definidos en /docker
+	@echo "🚀 Levantando todos los servicios Docker..."
+	@$(DOCKER_CMD) up -d
+	@echo "✅ Todos los servicios están arriba."
+
+down: ## 🐳 Detiene y elimina todos los servicios definidos en /docker
+	@echo "🛑 Deteniendo todos los servicios Docker..."
+	@$(DOCKER_CMD) down
+	@echo "✅ Todos los servicios han sido detenidos y eliminados."
+
+restart: ## 🐳 Reinicia todos los servicios definidos en /docker
+	@echo "🔄 Reiniciando todos los servicios Docker..."
+	@$(DOCKER_CMD) down
+	@$(DOCKER_CMD) up -d
+	@echo "✅ Todos los servicios han sido reiniciados."
+
+build: ## 🐳 Reconstruye todos los servicios definidos en /docker
+	@echo "🔨 Reconstruyendo todos los servicios Docker..."
+	@$(DOCKER_CMD) up -d --build
+	@echo "✅ Todos los servicios han sido reconstruidos."
+
 
 # =============================================================================
 # COMANDOS DEL PROYECTO
