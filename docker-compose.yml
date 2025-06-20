@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17.5-alpine3.22
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: streamlit.dockerfile
+    working_dir: /app
+    env_file: .env
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      STREAMLIT_SERVER_PORT: ${STREAMLIT_SERVER_PORT}
+    ports:
+      - "${STREAMLIT_SERVER_PORT}:8501"
+    volumes:
+      - ./:/app
+    command: >
+      streamlit run chatbot_app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+      --server.runOnSave=true
+    depends_on: 
+      - postgres
+
+volumes:
+  pgdata:

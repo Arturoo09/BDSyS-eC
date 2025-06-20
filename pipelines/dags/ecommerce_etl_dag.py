@@ -9,10 +9,10 @@ from airflow.sensors.filesystem import FileSensor
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
 PROJECT_HOME      = Path(os.getenv("PROJECT_HOME", "/opt/airflow"))
-SPARK_CONN_ID     = os.getenv("SPARK_CONN_ID", "spark_default")
+SPARK_CONN_ID     = os.getenv("SPARK_CONN_ID", "spark_local")
 
-SPARK_DRIVER_MEM  = os.getenv("SPARK_DRIVER_MEMORY", "2g")
-SPARK_EXEC_MEM    = os.getenv("SPARK_WORKER_MEMORY", "2g")
+SPARK_DRIVER_MEM  = os.getenv("SPARK_DRIVER_MEMORY", "4g")
+SPARK_EXEC_MEM    = os.getenv("SPARK_WORKER_MEMORY", "4g")
 
 FILE_TO_PROCESS   = os.getenv("FILE_TO_PROCESS", "2020-Apr.csv")
 
@@ -38,7 +38,7 @@ with DAG(
     start_date=pendulum.datetime(2020, 1, 1, tz="Europe/Madrid"),
     catchup=False,
     tags=["ecommerce", "spark"],
-    params={"processing_date": "2020-01-01"},
+    params={"processing_date": "2020-04-01"},
 ) as dag:
 
     wait_for_input = FileSensor(
@@ -58,6 +58,8 @@ with DAG(
         conf={
             "spark.driver.memory": SPARK_DRIVER_MEM,
             "spark.executor.memory": SPARK_EXEC_MEM,
+            "spark.sql.adaptive.enabled": "true",
+            "spark.sql.adaptive.coalescePartitions.enabled": "true",
         },
         application_args=[
             "--input-file", str(DATA_ZONE / FILE_TO_PROCESS),
@@ -73,13 +75,15 @@ with DAG(
         conf={
             "spark.driver.memory": SPARK_DRIVER_MEM,
             "spark.executor.memory": SPARK_EXEC_MEM,
+            "spark.sql.adaptive.enabled": "true",
+            "spark.sql.adaptive.coalescePartitions.enabled": "true",
         },
         application_args=[
             "--input-path", str(DATA_ZONE / "silver"),
             "--output-path", str(DATA_ZONE / "gold"),
             "--processing-date", "{{ params.processing_date }}",
         ],
-        driver_class_path=str(POSTGRES_JAR),
+        jars=str(POSTGRES_JAR),
     )
 
     wait_for_input >> bronze_to_silver >> silver_to_gold
