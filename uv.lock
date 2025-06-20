@@ -445,49 +445,60 @@ name = "bdsys-ec"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "pendulum" },
+    { name = "psycopg2-binary" },
+    { name = "pyarrow" },
+    { name = "sqlalchemy" },
+]
+
+[package.optional-dependencies]
+airflow = [
     { name = "apache-airflow" },
     { name = "apache-airflow-providers-apache-spark" },
     { name = "flask-appbuilder" },
-    { name = "google-generativeai" },
+]
+notebook = [
     { name = "ipykernel" },
     { name = "kaggle" },
+    { name = "matplotlib" },
+    { name = "pandas" },
+    { name = "seaborn" },
+]
+spark = [
+    { name = "pyspark" },
+]
+streamlit = [
+    { name = "google-generativeai" },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
-    { name = "matplotlib" },
-    { name = "pandas" },
-    { name = "pendulum" },
-    { name = "psycopg2-binary" },
-    { name = "pyarrow" },
-    { name = "pyspark" },
-    { name = "seaborn" },
-    { name = "sqlalchemy" },
     { name = "streamlit" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "apache-airflow", specifier = ">=3.0.2" },
-    { name = "apache-airflow-providers-apache-spark", specifier = ">=5.3.0" },
-    { name = "flask-appbuilder", specifier = ">=4.7.0" },
-    { name = "google-generativeai", specifier = ">=0.8.5" },
-    { name = "ipykernel", specifier = ">=6.29.5" },
-    { name = "kaggle", specifier = ">=1.7.4.5" },
-    { name = "langchain", specifier = ">=0.3.25" },
-    { name = "langchain-community", specifier = ">=0.3.25" },
-    { name = "langchain-google-genai", specifier = ">=2.0.10" },
-    { name = "langchain-openai", specifier = ">=0.3.24" },
-    { name = "matplotlib", specifier = ">=3.10.3" },
-    { name = "pandas", specifier = ">=2.3.0" },
+    { name = "apache-airflow", marker = "extra == 'airflow'", specifier = ">=3.0.2" },
+    { name = "apache-airflow-providers-apache-spark", marker = "extra == 'airflow'", specifier = ">=5.3.0" },
+    { name = "flask-appbuilder", marker = "extra == 'airflow'", specifier = ">=4.7.0" },
+    { name = "google-generativeai", marker = "extra == 'streamlit'", specifier = ">=0.8.5" },
+    { name = "ipykernel", marker = "extra == 'notebook'", specifier = ">=6.29.5" },
+    { name = "kaggle", marker = "extra == 'notebook'", specifier = ">=1.7.4.5" },
+    { name = "langchain", marker = "extra == 'streamlit'", specifier = ">=0.3.25" },
+    { name = "langchain-community", marker = "extra == 'streamlit'", specifier = ">=0.3.25" },
+    { name = "langchain-google-genai", marker = "extra == 'streamlit'", specifier = ">=2.0.10" },
+    { name = "langchain-openai", marker = "extra == 'streamlit'", specifier = ">=0.3.24" },
+    { name = "matplotlib", marker = "extra == 'notebook'", specifier = ">=3.10.3" },
+    { name = "pandas", marker = "extra == 'notebook'", specifier = ">=2.3.0" },
     { name = "pendulum", specifier = ">=3.1.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pyarrow", specifier = ">=20.0.0" },
-    { name = "pyspark", specifier = ">=4.0.0" },
-    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "pyspark", marker = "extra == 'spark'", specifier = ">=4.0.0" },
+    { name = "seaborn", marker = "extra == 'notebook'", specifier = ">=0.13.2" },
     { name = "sqlalchemy", specifier = ">=1.4.54" },
-    { name = "streamlit", specifier = ">=1.46.0" },
+    { name = "streamlit", marker = "extra == 'streamlit'", specifier = ">=1.46.0" },
 ]
+provides-extras = ["streamlit", "airflow", "spark", "notebook"]
 
 [[package]]
 name = "bleach"
